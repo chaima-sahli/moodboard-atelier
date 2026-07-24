@@ -1,24 +1,33 @@
-import { api } from './api/client';
-import { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Dashboard from './pages/Dashboard';
+
+function ProtectedRoute({ children }) {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+  return children;
+}
 
 function App() {
-  const [status, setStatus] = useState('Chargement...');
-
-  useEffect(() => {
-    // Tester la connexion au backend
-    fetch('http://localhost:5000/api/health')
-      .then(res => res.json())
-      .then(data => setStatus(`✅ Backend OK: ${data.status}`))
-      .catch(() => setStatus('❌ Backend non trouvé - démarre le serveur!'));
-  }, []);
-
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-500 to-blue-500">
-      <div className="text-center text-white">
-        <h1 className="text-4xl font-bold mb-4">🎨 Moodboard Atelier</h1>
-        <p className="text-lg">{status}</p>
-      </div>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/" element={<Navigate to="/login" replace />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
