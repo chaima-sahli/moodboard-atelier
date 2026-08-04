@@ -1,0 +1,67 @@
+.header {
+  background: rgba(245, 237, 225, 0.92);
+  backdrop-filter: blur(8px);
+  padding: 16px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid rgba(200, 180, 160, 0.3);
+  z-index: 10;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.header-left h1 {
+  font-family: 'Caveat', cursive;
+  font-size: 32px;
+  font-weight: 700;
+  color: #4a3728;
+  letter-spacing: 0.5px;
+}
+
+.header-left h1 span {
+  display: inline-block;
+  transform: rotate(-2deg);
+}
+
+.header-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.header-btn {
+  padding: 10px 20px;
+  font-family: 'Quicksand', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: #f5ede1;
+  color: #4a3728;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+}
+
+.header-btn:hover {
+  transform: translateY(-2px) rotate(-1deg);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.header-btn-primary {
+  background: #d4c5b2;
+  color: #3d2e1e;
+}
+
+.header-btn-primary:hover {
+  background: #c9b8a2;
+}
+
+.header-btn-note {
+  background: #fce4c8;
+  color: #5a3f2b;
+}
+
+.header-btn-note:hover {
+  background: #fad6b3;
+}
