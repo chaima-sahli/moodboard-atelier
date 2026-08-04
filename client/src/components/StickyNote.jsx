@@ -1,11 +1,15 @@
-import  { useState } from 'react';
+import { useState } from 'react';
+import { useDrag } from '../hooks/useDrag';
 import './StickyNote.css';
 
 function StickyNote({ item, onUpdate, onDelete }) {
   const [isEditing, setIsEditing] = useState(false);
   const [text, setText] = useState(item.text);
+  const { elementRef, handleMouseDown, isDragging, position, style } = useDrag(item, onUpdate);
 
-  const handleDoubleClick = () => {
+  const handleDoubleClick = (e) => {
+    // Prevent drag from triggering on double click
+    e.stopPropagation();
     setIsEditing(true);
   };
 
@@ -23,17 +27,25 @@ function StickyNote({ item, onUpdate, onDelete }) {
     }
   };
 
+  // Prevent drag when clicking on textarea
+  const handleTextMouseDown = (e) => {
+    e.stopPropagation();
+  };
+
   return (
     <div 
-      className="sticky-note"
+      ref={elementRef}
+      className={`sticky-note ${isDragging ? 'dragging' : ''}`}
       style={{
-        left: item.x,
-        top: item.y,
+        ...style,
+        left: position.x,
+        top: position.y,
         width: item.width,
         height: item.height,
         transform: `rotate(${item.rotation}deg)`,
         backgroundColor: item.color,
       }}
+      onMouseDown={handleMouseDown}
     >
       {/* Tape corner decorations */}
       <div className="tape tape-top-left"></div>
@@ -48,17 +60,17 @@ function StickyNote({ item, onUpdate, onDelete }) {
           onChange={(e) => setText(e.target.value)}
           onBlur={handleBlur}
           onKeyDown={handleKeyDown}
+          onMouseDown={handleTextMouseDown}
           autoFocus
           style={{ 
             backgroundColor: item.color,
-            fontFamily: "'Caveat', cursive"
           }}
         />
       ) : (
         <p 
           className="note-text" 
           onDoubleClick={handleDoubleClick}
-          style={{ fontFamily: "'Caveat', cursive" }}
+          onMouseDown={handleTextMouseDown}
         >
           {item.text}
         </p>
@@ -66,7 +78,10 @@ function StickyNote({ item, onUpdate, onDelete }) {
 
       <button 
         className="delete-btn"
-        onClick={() => onDelete(item.id)}
+        onClick={(e) => {
+          e.stopPropagation();
+          onDelete(item.id);
+        }}
       >
         ×
       </button>

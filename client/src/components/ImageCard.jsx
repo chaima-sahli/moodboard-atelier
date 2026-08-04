@@ -1,20 +1,22 @@
+import { useDrag } from '../hooks/useDrag';
 import './ImageCard.css';
 
 function ImageCard({ item, onUpdate, onDelete }) {
-  const handleMouseDown = (e) => {
-    // We'll implement drag later
-  };
+  const { elementRef, handleMouseDown, isDragging, position, style } = useDrag(item, onUpdate);
 
   return (
     <div 
-      className="image-card"
+      ref={elementRef}
+      className={`image-card ${isDragging ? 'dragging' : ''}`}
       style={{
-        left: item.x,
-        top: item.y,
+        ...style,
+        left: position.x,
+        top: position.y,
         width: item.width,
         height: item.height,
         transform: `rotate(${item.rotation}deg)`,
       }}
+      onMouseDown={handleMouseDown}
     >
       <img src={item.url} alt="Moodboard item" />
       
@@ -30,7 +32,10 @@ function ImageCard({ item, onUpdate, onDelete }) {
       {/* Delete button */}
       <button 
         className="delete-btn"
-        onClick={() => onDelete(item.id)}
+        onClick={(e) => {
+          e.stopPropagation();
+          onDelete(item.id);
+        }}
       >
         ×
       </button>

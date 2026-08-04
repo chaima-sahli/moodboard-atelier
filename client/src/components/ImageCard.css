@@ -6,9 +6,10 @@
     0 4px 12px rgba(0, 0, 0, 0.12),
     0 2px 4px rgba(0, 0, 0, 0.06);
   cursor: grab;
-  transition: box-shadow 0.2s ease;
+  transition: box-shadow 0.2s ease, transform 0.1s ease;
   background: white;
   border: 1px solid rgba(200, 180, 160, 0.2);
+  touch-action: none; /* Prevent touch scrolling while dragging */
 }
 
 .image-card:hover {
@@ -16,6 +17,15 @@
     0 8px 24px rgba(0, 0, 0, 0.15),
     0 2px 8px rgba(0, 0, 0, 0.08);
   z-index: 10;
+}
+
+.image-card.dragging {
+  cursor: grabbing !important;
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, 0.2),
+    0 4px 12px rgba(0, 0, 0, 0.1) !important;
+  z-index: 100 !important;
+  transform: rotate(0deg) scale(1.02) !important;
 }
 
 .image-card img {
