@@ -1,18 +1,18 @@
-import  { useState, useEffect, useImperativeHandle  } from 'react';
+import { useState, useEffect, useImperativeHandle, forwardRef } from 'react';
 import ImageCard from './ImageCard';
 import StickyNote from './StickyNote';
 import './Board.css';
 
-function Board({}, ref) {
-  const [items, setItems] = useState([]);
-
-  // Load items from localStorage
-  useEffect(() => {
-    const saved = localStorage.getItem('moodboardItems');
-    if (saved) {
-      setItems(JSON.parse(saved));
+const Board = forwardRef(function Board(props, ref) {
+  // Lazy initializer: runs once on mount, no effect needed
+  const [items, setItems] = useState(() => {
+    try {
+      const saved = localStorage.getItem('moodboardItems');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
     }
-  }, []);
+  });
 
   // Save items to localStorage
   useEffect(() => {
@@ -31,7 +31,8 @@ function Board({}, ref) {
         width: 200,
         height: 200,
       };
-      setItems([...items, newItem]);
+      // Functional update avoids stale closure over `items`
+      setItems((prev) => [...prev, newItem]);
     },
     addNote: () => {
       const colors = ['#fce4c8', '#f8d5d5', '#d5e8d5', '#d5d5f0', '#f0e6d5', '#e8d5f0'];
@@ -46,49 +47,18 @@ function Board({}, ref) {
         width: 180,
         height: 160,
       };
-      setItems([...items, newItem]);
+      setItems((prev) => [...prev, newItem]);
     }
-  }));
-
-
-  const addImage = (imageData) => {
-    const newItem = {
-      id: Date.now() + Math.random(),
-      type: 'image',
-      url: imageData,
-      x: 100 + Math.random() * 200,
-      y: 100 + Math.random() * 200,
-      rotation: (Math.random() - 0.5) * 4,
-      width: 200,
-      height: 200,
-    };
-    setItems([...items, newItem]);
-  };
-
-  const addNote = () => {
-    const colors = ['#fce4c8', '#f8d5d5', '#d5e8d5', '#d5d5f0', '#f0e6d5', '#e8d5f0'];
-    const newItem = {
-      id: Date.now() + Math.random(),
-      type: 'note',
-      text: 'Write something...',
-      color: colors[Math.floor(Math.random() * colors.length)],
-      x: 100 + Math.random() * 200,
-      y: 100 + Math.random() * 200,
-      rotation: (Math.random() - 0.5) * 6,
-      width: 180,
-      height: 160,
-    };
-    setItems([...items, newItem]);
-  };
+  }), []); // empty deps is fine here since we use functional updates
 
   const updateItem = (id, updates) => {
-    setItems(items.map(item => 
-      item.id === id ? { ...item, ...updates } : item
-    ));
+    setItems((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, ...updates } : item))
+    );
   };
 
   const deleteItem = (id) => {
-    setItems(items.filter(item => item.id !== id));
+    setItems((prev) => prev.filter((item) => item.id !== id));
   };
 
   return (
@@ -127,6 +97,6 @@ function Board({}, ref) {
       </div>
     </div>
   );
-}
+});
 
 export default Board;
